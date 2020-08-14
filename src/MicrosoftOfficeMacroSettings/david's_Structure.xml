@@ -1,0 +1,26 @@
+<report>
+    <GPO xmlns="http://www.microsoft.com/GroupPolicy/Settings"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            ......
+            <Computer></Computer>
+            <User>
+                <ExtensionData>
+                    <Extension xsi:type="q4:RegistrySettings"
+                               xmlns:q4="http://www.microsoft.com/GroupPolicy/Settings/Registry">
+                            <q4:Policy>
+                                <q4:Name></q4:Name>
+                                <q4:State></q4:State>
+                                <q4:DropDownList>   <!--  For VBA Macro Notification Settings only  -->
+                                    <q4:Name></q4:Name>
+                                    <q4:State></q4:State>
+                                    <q4:Value>
+                                        <Q4:Name></Q4:Name>
+                                    </q4:Value>
+                                </q4:DropDownList>
+                            </q4:Policy>
+                </ExtensionData>
+            </User>
+
+
+</report>

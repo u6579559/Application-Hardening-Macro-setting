@@ -1,0 +1,252 @@
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition
+
+WindowManager:
+    transition: FadeTransition()
+    MainWindow:
+        id: main_window
+    SecondWindow:
+        id: second_window
+        file_list: main_window.file_list
+    FileSel:
+        id: file_selector
+    ExportReport:
+        id: export_report_id
+
+<P>:
+    Label:
+        id: export_message
+        text:  ""
+        size_hint : 0.6, 0.2
+        pos_hint: {"x":0.2, "top":1}
+
+<Button>:
+    font_size: 30
+    size_hint: 0.15, 0.1
+
+<SmoothButton@Button>
+    background_color: (0,0,0,0)
+    background_normal: ''
+    back_color: (0.157, 0.445, 0.753, 1.0)
+    border_radius: [18]
+    canvas.before:
+        Color:
+            rgba: self.back_color
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: self.border_radius
+
+<StrokeButton@Button>
+    background_color: (0,0,0,0)
+    background_normal: ''
+    back_color: (0.157, 0.445, 0.753, 1.0)
+    border_radius: 18
+    color: self.back_color
+    bold: True
+    canvas.before:
+        Color:
+            rgba: self.back_color
+        Line:
+            rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+            width: 1.2
+
+
+
+<MainWindow>:
+    name: "main"
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    GridLayout:
+        cols: 1
+
+        Label:
+            color: 0,0,0,1
+            font_size: 55
+            pos_hint: {"x":-0.03, "top":1}
+            text_size:  self.size
+            halign: 'center'
+            valign: 'middle'
+
+            text: root.message
+
+        FloatLayout:
+            cols: 2
+            size_hint_y: 0.2
+            StrokeButton:
+                size_hint: 0.3, 0.3
+                back_color: (0.157, 0.445, 0.753, 1.0) if self.state == 'normal' else (0.157, 0.445, 0.353, 1.0)
+                pos_hint: {"x":0.1, "top":0.6}
+                text: "Select GPO file"
+                on_release: root.select_file()
+
+            StrokeButton:
+                size_hint: 0.3, 0.3
+                back_color: (0.157, 0.445, 0.753, 1.0) if self.state == 'normal' else (0.157, 0.445, 0.353, 1.0)
+                pos_hint: {"x":0.6, "top":0.6}
+                text: "Generate Report"
+                on_release:
+                    root.generate_report()
+
+# Hide the delete button
+#            StrokeButton:
+#                size_hint: 0.2, 0.3
+#                back_color: (0.157, 0.445, 0.753, 1.0) if self.state == 'normal' else (0.157, 0.445, 0.353, 1.0)
+#                pos_hint: {"x":0.4, "top":1.3}
+#                text: "delete file"
+#                on_release:
+#                    root.delete_file()
+
+<FileSel>:
+    name: "file_sel"
+    auto_dismiss: True
+    GridLayout:
+        cols:1
+        ScrollView:
+            on_scroll_y: root._scroll(args[1])
+            do_scroll_x: False
+            bar_width: 10
+            scroll_wheel_distance: 1000
+            effect_cls: "ScrollEffect"
+            scroll_type: ['bars']
+            FloatLayout:
+                size: root.size
+                pos: root.pos
+                FileChooserIconView:
+                    id: file_chooser
+                    multiselect: True
+                    orientation: 'vertical'
+                    canvas.before:
+                        Color:
+                            rgb: .4, .5, .5
+                        Rectangle:
+                            size: root.size
+                    #on_selection:
+                        #root.selected(*args)
+
+        FloatLayout:
+            size_hint_y: 0.2
+            StrokeButton:
+                size_hint: 0.3, 0.3
+                back_color: (0.157, 0.445, 0.753, 1.0) if self.state == 'normal' else (0.157, 0.445, 0.353, 1.0)
+                pos_hint: {"x":0.35, "top":0.6}
+                text: "Upload"
+                on_release:
+                    root.manager.ids.file_selector.selected(file_chooser.path, file_chooser.selection)
+
+
+<ExportReport>:
+    name: "export_report_file_selector"
+    auto_dismiss: True
+
+    GridLayout:
+        cols:1
+        ScrollView:
+            on_scroll_y: root._scroll(args[1])
+            do_scroll_x: False
+            bar_width: 10
+            scroll_wheel_distance: 1000
+            effect_cls: "ScrollEffect"
+            scroll_type: ['bars']
+            FloatLayout:
+                size: root.size
+                pos: root.pos
+                FileChooserIconView:
+                    id: filechooser2
+                    dirselect: True
+                    orientation: 'vertical'
+                    canvas.before:
+                        Color:
+                            rgb: .4, .5, .5
+                        Rectangle:
+                            size: root.size
+
+        FloatLayout:
+            cols: 2
+            size_hint_y: 0.2
+
+            TextInput:
+                hint_text: "Please name the report"
+                id: file_name
+                multiline: False
+
+            StrokeButton:
+                size_hint: 0.3, 0.3
+                back_color: (0.157, 0.445, 0.753, 1.0) if self.state == 'normal' else (0.157, 0.445, 0.353, 1.0)
+                pos_hint: {"x":0.6, "top":0.6}
+                text: "Save"
+                on_release:
+                    root.manager.ids.export_report_id.selected(filechooser2.path, filechooser2.selection, file_name.text)
+
+<ErrorMessage>:
+    auto_dismiss: True
+
+    RelativeLayout:
+        size: root.size
+        pos: root.pos
+
+        Label:
+            pos_hint: {"top":1.7}
+            text_size: self.size
+            text: "File Seleced is not an xml file, please reselect an xml file"
+
+        Button:
+            id: close
+            size: 80, 50
+            size_hint: None, None
+            pos_hint: { "center_x":0.5,"y":0.2}
+            text: "Close"
+            font_size: 18
+            on_release:
+                root.closePopup()
+                app.root.current = "main"
+
+
+<SecondWindow>:
+    name: "second"
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    GridLayout:
+        cols:1
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            Label:
+                markup: True
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]
+                padding: 10, 10
+                color: 0,0,0,1
+                text:
+                    root.full_report
+
+        FloatLayout:
+            cols: 2
+            size_hint_y: 0.2
+            StrokeButton:
+                size_hint: 0.3, 0.3
+                back_color: (0.157, 0.445, 0.753, 1.0) if self.state == 'normal' else (0.157, 0.445, 0.353, 1.0)
+                pos_hint: {"x":0.1, "top":0.6}
+                text: "Export report"
+                on_release:
+                    root.export_report()
+
+            StrokeButton:
+                size_hint: 0.3, 0.3
+                back_color: (0.157, 0.445, 0.753, 1.0) if self.state == 'normal' else (0.157, 0.445, 0.353, 1.0)
+                pos_hint: {"x":0.6, "top":0.6}
+                text: "Start again"
+                on_release:
+                    root.start_again()
+
+
